@@ -20,13 +20,53 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(direct = true) {
+    this.direct = direct;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(plaintext, keyword) {
+    if (typeof plaintext !== 'string' || typeof keyword !== 'string') {
+      throw new Error('Incorrect arguments!');
+    }
+    const plaintextArray = plaintext.toUpperCase().split('');
+    const keywordArray = keyword.toUpperCase().split('');
+    const encryptedArray = [];
+    let keywordIndex = 0;
+
+    for (let i = 0; i < plaintextArray.length; i++) {
+      if (plaintextArray[i].match(/[A-Z]/)) {
+        const shift = keywordArray[keywordIndex++ % keywordArray.length].charCodeAt(0) - 65;
+        encryptedArray.push(String.fromCharCode(65 + (plaintextArray[i].charCodeAt(0) - 65 + shift) % 26));
+      } else {
+        encryptedArray.push(plaintextArray[i]);
+      }
+    }
+    
+    const result = encryptedArray.join('');
+    return this.direct ? result : result.split('').reverse().join('');
+  }
+
+  decrypt(plaintext, keyword) {
+    if (typeof plaintext !== 'string' || typeof keyword !== 'string') {
+      throw new Error('Incorrect arguments!');
+    }
+    const plaintextArray = plaintext.toUpperCase().split('');
+    
+    const keywordArray = keyword.toUpperCase().split('');
+    const decryptedArray = [];
+    let keywordIndex = 0;
+
+    for (let i = 0; i < plaintextArray.length; i++) {
+      if (plaintextArray[i].match(/[A-Z]/)) {
+        const shift = keywordArray[keywordIndex++ % keywordArray.length].charCodeAt(0) - 65;
+        decryptedArray.push(String.fromCharCode(65 + (plaintextArray[i].charCodeAt(0) - 65 - shift + 26) % 26));
+      } else {
+        decryptedArray.push(plaintextArray[i]);
+      }
+    }
+    
+    const result = decryptedArray.join('');
+    return this.direct ? result : result.split('').reverse().join('');
   }
 }
 
